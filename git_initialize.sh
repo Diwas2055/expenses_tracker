@@ -4,6 +4,12 @@ function git_initialize(){
     # Prompt user for the project path
     read -p "Enter project path: " project_path
 
+    # Set default path to current directory if empty
+    project_path="${project_path:-.}"
+    
+    # Display the project path
+    echo "Project path: $project_path"
+
     # Check if the directory exists
     if [ -e "$project_path" ]; then
         # Check if it's already a Git repository
@@ -26,6 +32,7 @@ function git_initialize(){
 
 function remote_origin(){
     remote_name="origin"
+    cd $project_path
     git_url=$(git remote get-url $remote_name 2>/dev/null)
     if [ -z "$git_url" ]; then
         echo "Remote '$remote_name' does not exist."
@@ -53,12 +60,13 @@ function remote_origin(){
             fi
         else
             echo "Remote URL not updated."
-            exit 1
         fi
     fi
 }
 
 function add_commit_push(){
+    cd $project_path
+
     # Add all files to the staging area
     git add .
 
@@ -84,3 +92,5 @@ function add_commit_push(){
 git_initialize
 remote_origin
 add_commit_push
+
+exit 1
