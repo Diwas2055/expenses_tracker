@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:13.8-bullseye
+    hostname: ${DB_ADDRESS}
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_DB: ${DB_NAME:-test}
+      PGDATA: /data/postgres
+
+    volumes:
+      - api-db-data:/var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}:5432
+    networks:
+      - api-network
+    healthcheck:
+      test: pg_isready -U ${DB_USER} -d ${DB_NAME}
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+volumes:
+  api-db-data:
+    name: api-db-data
+
+networks:
+  api-network:
+    name: expenses-network
